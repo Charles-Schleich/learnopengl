@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <learnopengl/shader.h>
+#include <cmath>
 
 // Declarations 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -74,10 +75,8 @@ int main()
     int success;
     char infoLog[512];
 
-    Shader ourShader( "path/to/vertex.shader"
-                    , "path/to/fragment.shader");
-
-    // Coordinate Verticies 
+    Shader ourShader( "./shaders/vertex.shader"
+                    , "./shaders/fragment.shader");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //float vertices[] = {

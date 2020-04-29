@@ -65,8 +65,8 @@ class Shader{
             glAttachShader(ID, vertex);
             glAttachShader(ID, fragment);
             glLinkProgram(ID);
+            checkCompileErrors(ID, "PROGRAM");
             // print linking errors if any
-            checkCompileErrors(vertex, "PROGRAM");
             glDeleteShader(vertex);
             glDeleteShader(fragment);
 
@@ -93,6 +93,7 @@ class Shader{
         {
             int success;
             char infoLog[1024];
+            
             if (type != "PROGRAM") {
                 glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
                 if (!success){
@@ -103,7 +104,7 @@ class Shader{
                 glGetProgramiv(shader, GL_LINK_STATUS, &success);
                 if (!success){
                     glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-                    std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+                    std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: \n" << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
                 }
             }
         }

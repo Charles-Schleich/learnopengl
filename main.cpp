@@ -13,27 +13,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // shaders
-const char* vertexShaderSource = 
-"#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"layout (location = 1) in vec3 aColor;\n"
-"out vec3 ourColor; "
-"void main()\n"
-"{\n"
-"   gl_Position = vec4(aPos, 1.0);\n"
-"   ourColor = aColor;"
-"}\0";
-
-const char* fragmentShaderSource = 
-"#version 330 core\n"
-"out vec4 FragColor;\n"
-"in vec3 ourColor;"
-"void main()\n"
-"{\n"
-"    FragColor = vec4(ourColor,1.0);"
-"}\0";
-
-
+ 
 // code
 // VBO : vertex buffer objects 
 // VAO : Vertex Array Object
@@ -41,7 +21,6 @@ const char* fragmentShaderSource =
 int main()
 {
 
-    //std::cout << "Hello world";
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -56,25 +35,13 @@ int main()
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
-    ///////////////
 
-
-    ///////////////
-
-    // Begin setting up shader
-    int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-
-    int success;
-    char infoLog[512];
-
+    // Setup Shaders using shader.h File
     Shader ourShader( "./shaders/vertex.shader"
                     , "./shaders/fragment.shader");
 
@@ -100,20 +67,17 @@ int main()
     
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    // VAO Vertex Array Object 
+    // VAO: Vertex Array Object 
     // Vertex Object 
+    // EBO: 
 
-    unsigned int VBO, VAO, EBO;
+    unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
-    //glGenBuffers(1, &EBO);
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -121,11 +85,9 @@ int main()
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-
     // UNBIND VBO
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-    //glUseProgram(shaderProgram);
     ourShader.use();
 
 
@@ -138,11 +100,9 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        float timeValue = glfwGetTime();
+        // float timeValue = glfwGetTime();
         //float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-        float z_pos= (sin(timeValue) / 2.0f) +0.5f;
-        //int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourPos");
-
+        // float z_pos = (sin(timeValue) / 2.0f) +0.5f;
         //glUniform1f(vertexColorLocation, z_pos);
 
         glBindVertexArray(VAO);

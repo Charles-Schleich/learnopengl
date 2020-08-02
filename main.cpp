@@ -88,9 +88,11 @@ int main()
     // UNBIND VBO
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
     ourShader.use();
-
-
+    float offset = 0.0f;
+    float yoffset = 0.0f;
+  
     // Render loop
     while (!glfwWindowShouldClose(window)) {
         // input 
@@ -100,11 +102,37 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        
+        // float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
         // float timeValue = glfwGetTime();
-        //float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-        // float z_pos = (sin(timeValue) / 2.0f) +0.5f;
-        //glUniform1f(vertexColorLocation, z_pos);
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+            std::cout << "d";
+            offset = offset + 0.01;
+        }
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+            std::cout << "a";
+            offset =offset - 0.01;
+        }
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+            std::cout << "d";
+            yoffset = yoffset + 0.01;
+        }
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+            yoffset =yoffset - 0.01;
+        }
 
+
+        if (offset > 1.0) {
+            offset = 0;
+        }
+
+        // float z_pos = (sin(timeValue) / 2.0f) +0.5f;
+        // float offset = z_pos;
+        ourShader.setFloat("xOffset", offset);
+        ourShader.setFloat("yOffset", yoffset);
+
+
+        //glUniform1f(vertexColorLocation, z_pos);
         glBindVertexArray(VAO);
         //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glDrawArrays(GL_TRIANGLES,0,3);

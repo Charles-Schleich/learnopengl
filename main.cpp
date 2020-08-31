@@ -12,7 +12,7 @@ void processInput(GLFWwindow* window);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-
+float vary = 0.0f;
 // shaders
  
 // code
@@ -70,61 +70,7 @@ int main()
         1, 2, 3  // second triangle
     };
 
-    // textures
-    float texCoors[] = {
-        0.0f, 0.0f, // lower left corner 
-        1.0f, 0.0f, // lower right corner
-        0.5f, 1.0f, // top center
-    };
-    
-    unsigned int texture1, texture2;
-    glGenTextures(1, &texture1);
-    glBindTexture(GL_TEXTURE_2D,texture1);
-    // set the texture wrapping/filtering options (on the currently bound texture object)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    //load texture
-    int width, height, nrChannels;
-    unsigned char *data = stbi_load("./textures/container.jpg", &width, &height, &nrChannels,0);
-    if (data){
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else {
-        std::cout<< "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
-
-
-
-    glGenTextures(1, &texture2);
-    glBindTexture(GL_TEXTURE_2D,texture2);
-    // set the texture wrapping/filtering options (on the currently bound texture object)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // Load Second Texture
-    // int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true);  
-    data = stbi_load("./textures/awesomeface.png", &width, &height, &nrChannels,0);
-    if (data){
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else {
-        std::cout<< "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
-
-
-
-
-
+   
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     // VAO: Vertex Array Object 
@@ -156,13 +102,62 @@ int main()
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
+
+
+    // TEXTURES
+    unsigned int texture1, texture2;
+    glGenTextures(1, &texture1);
+    glBindTexture(GL_TEXTURE_2D,texture1);
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    //load texture
+    int width, height, nrChannels;
+    unsigned char *data = stbi_load("./textures/container.jpg", &width, &height, &nrChannels,0);
+    if (data){
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else {
+        std::cout<< "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+
+
+
+    glGenTextures(1, &texture2);
+    glBindTexture(GL_TEXTURE_2D,texture2);
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Load Second Texture
+    // int width, height, nrChannels;
+    stbi_set_flip_vertically_on_load(true);  
+    data = stbi_load("./textures/awesomeface.png", &width, &height, &nrChannels,0);
+    if (data){
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else {
+        std::cout<< "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+
+
+
+
     // UNBIND VBO
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
     ourShader.use(); // don't forget to activate the shader before setting uniforms!  
     glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0); // set it manually
     ourShader.setInt("texture2", 1); // or with shader class
-
 
     // Render loop
     while (!glfwWindowShouldClose(window)) {
@@ -174,20 +169,23 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         // float timeValue = glfwGetTime();
-        //float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+        // float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
         // float z_pos = (sin(timeValue) / 2.0f) +0.5f;
         //glUniform1f(vertexColorLocation, z_pos);
 
         // glBindVertexArray(VAO);
         // glDrawArrays(GL_TRIANGLES,0,3);
-
+    
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
 
 
-
+        ourShader.setFloat("vary", vary); // or with shader class
+        // ourShader.setFloat("mixValue", mixValue);
+        // Render Container
+        ourShader.use();
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -231,6 +229,31 @@ void processInput(GLFWwindow* window)
         std::cout << "3";
         glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
     }
+
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+            std::cout << "GLFW_KEY_UP\n" ;
+            std::cout << "Vary:" << vary <<std::endl;
+
+            if (vary>1.0){
+                vary=1.0;
+            } else {
+                vary=vary+0.01;
+            }
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+            std::cout << "GLFW_KEY_UP\n";
+            std::cout << "Vary:" << vary <<std::endl;
+
+            if (vary<0.0){
+                vary=0.0;
+            } else {
+                vary=vary-0.01;
+            }
+    }
+
+
+
 
 
 }

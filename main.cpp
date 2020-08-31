@@ -77,14 +77,15 @@ int main()
         0.5f, 1.0f, // top center
     };
     
-    unsigned int texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D,texture);
+    unsigned int texture1, texture2;
+    glGenTextures(1, &texture1);
+    glBindTexture(GL_TEXTURE_2D,texture1);
     // set the texture wrapping/filtering options (on the currently bound texture object)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
     //load texture
     int width, height, nrChannels;
     unsigned char *data = stbi_load("./textures/container.jpg", &width, &height, &nrChannels,0);
@@ -96,6 +97,32 @@ int main()
         std::cout<< "Failed to load texture" << std::endl;
     }
     stbi_image_free(data);
+
+
+
+    glGenTextures(1, &texture2);
+    glBindTexture(GL_TEXTURE_2D,texture2);
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Load Second Texture
+    // int width, height, nrChannels;
+    stbi_set_flip_vertically_on_load(true);  
+    data = stbi_load("./textures/awesomeface.png", &width, &height, &nrChannels,0);
+    if (data){
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else {
+        std::cout<< "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+
+
+
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -132,7 +159,9 @@ int main()
     // UNBIND VBO
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-    ourShader.use();
+    ourShader.use(); // don't forget to activate the shader before setting uniforms!  
+    glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0); // set it manually
+    ourShader.setInt("texture2", 1); // or with shader class
 
 
     // Render loop
@@ -151,11 +180,16 @@ int main()
 
         // glBindVertexArray(VAO);
         // glDrawArrays(GL_TRIANGLES,0,3);
- 
-        glBindTexture(GL_TEXTURE_2D, texture);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture2);
+
+
+
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
 
         //glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
         // are you really reading my code right now ? 

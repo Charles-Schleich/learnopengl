@@ -5,6 +5,13 @@
 #include <stb_image/stb_image.h>
 #include <cmath>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+
+
+
 // Declarations 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -12,12 +19,13 @@ void processInput(GLFWwindow* window);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-float vary = 0.0f;
-// shaders
- 
+float vary = 0.3f;
+
+
 // code
 // VBO : vertex buffer objects 
 // VAO : Vertex Array Object
+
 
 int main()
 {
@@ -126,8 +134,8 @@ int main()
     }
     stbi_image_free(data);
 
-
-
+    
+    // Texture 2 
     glGenTextures(1, &texture2);
     glBindTexture(GL_TEXTURE_2D,texture2);
     // set the texture wrapping/filtering options (on the currently bound texture object)
@@ -150,7 +158,9 @@ int main()
     stbi_image_free(data);
 
 
-
+    glm::mat4 trans = glm::mat4(1.0f);
+    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0,0.0,1.0));
+    trans = glm::scale(trans, glm::vec3(0.5,0.5,0.5));
 
     // UNBIND VBO
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -158,6 +168,9 @@ int main()
     ourShader.use(); // don't forget to activate the shader before setting uniforms!  
     glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0); // set it manually
     ourShader.setInt("texture2", 1); // or with shader class
+
+    unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+
 
     // Render loop
     while (!glfwWindowShouldClose(window)) {
@@ -172,9 +185,6 @@ int main()
         // float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
         // float z_pos = (sin(timeValue) / 2.0f) +0.5f;
         //glUniform1f(vertexColorLocation, z_pos);
-
-        // glBindVertexArray(VAO);
-        // glDrawArrays(GL_TRIANGLES,0,3);
     
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
@@ -182,15 +192,20 @@ int main()
         glBindTexture(GL_TEXTURE_2D, texture2);
 
 
+        glm::mat4 trans = glm:: mat4(1.0f);
+        trans = glm::translate(trans,glm::vec3(0.5f,-0.5f,0.0f));
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f,0.0f,1.0f) );
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
+        // std::cout << trans[1][1] << std::endl;
+
         ourShader.setFloat("vary", vary); // or with shader class
-        // ourShader.setFloat("mixValue", mixValue);
+
         // Render Container
         ourShader.use();
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-        //glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
-        // are you really reading my code right now ? 
 
         glfwSwapBuffers(window);
         glfwPollEvents();
